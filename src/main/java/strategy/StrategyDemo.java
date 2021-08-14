@@ -73,7 +73,6 @@ public class StrategyDemo {
         return Optional.ofNullable(strategyMap.get(memberCode)).orElse(originPrice -> printAndReturn(MemberDiscountEnum.LV1)).apply(price);
     }
 
-
     public static void main(String[] args) {
         StrategyDemo demo = new StrategyDemo();
         BigDecimal originPrice = BigDecimal.valueOf(100);

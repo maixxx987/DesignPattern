@@ -32,11 +32,11 @@ public class StrategyDemo {
      * value -> 执行的函数逻辑
      */
     Map<Integer, Function<BigDecimal, BigDecimal>> strategyMap = ImmutableMap.<Integer, Function<BigDecimal, BigDecimal>>builder()
-            .put(MemberDiscountEnum.LV1.getCode(), originPrice -> printAndReturn(MemberDiscountEnum.LV1))
-            .put(MemberDiscountEnum.LV2.getCode(), originPrice -> printAndReturn(MemberDiscountEnum.LV2))
-            .put(MemberDiscountEnum.LV3.getCode(), originPrice -> printAndReturn(MemberDiscountEnum.LV3))
-            .put(MemberDiscountEnum.LV4.getCode(), originPrice -> printAndReturn2(MemberDiscountEnum.LV4))
-            .put(MemberDiscountEnum.LV5.getCode(), originPrice -> printAndReturn2(MemberDiscountEnum.LV5))
+            .put(MemberDiscountEnum.LV1.getCode(), originPrice -> printAndReturn(originPrice, MemberDiscountEnum.LV1))
+            .put(MemberDiscountEnum.LV2.getCode(), originPrice -> printAndReturn(originPrice, MemberDiscountEnum.LV2))
+            .put(MemberDiscountEnum.LV3.getCode(), originPrice -> printAndReturn(originPrice, MemberDiscountEnum.LV3))
+            .put(MemberDiscountEnum.LV4.getCode(), originPrice -> printAndReturn2(originPrice, MemberDiscountEnum.LV4))
+            .put(MemberDiscountEnum.LV5.getCode(), originPrice -> printAndReturn2(originPrice, MemberDiscountEnum.LV5))
             .build();
 
     /**
@@ -45,9 +45,9 @@ public class StrategyDemo {
      * @param memberDiscountEnum 会员等级枚举
      * @return 折扣
      */
-    public BigDecimal printAndReturn(MemberDiscountEnum memberDiscountEnum) {
+    public BigDecimal printAndReturn(BigDecimal originPrice, MemberDiscountEnum memberDiscountEnum) {
         System.out.printf("member level:%d, discount:%s%n", memberDiscountEnum.getCode(), memberDiscountEnum.getDiscount());
-        return memberDiscountEnum.getDiscount();
+        return originPrice.multiply(memberDiscountEnum.getDiscount());
     }
 
     /**
@@ -56,9 +56,9 @@ public class StrategyDemo {
      * @param memberDiscountEnum 会员等级枚举
      * @return 折扣
      */
-    public BigDecimal printAndReturn2(MemberDiscountEnum memberDiscountEnum) {
+    public BigDecimal printAndReturn2(BigDecimal originPrice, MemberDiscountEnum memberDiscountEnum) {
         System.out.printf("member level:%d ==> discount:%s%n", memberDiscountEnum.getCode(), memberDiscountEnum.getDiscount());
-        return memberDiscountEnum.getDiscount();
+        return originPrice.multiply(memberDiscountEnum.getDiscount());
     }
 
 
@@ -70,7 +70,7 @@ public class StrategyDemo {
      * @return 会员价
      */
     public BigDecimal getPriceByStrategy(Integer memberCode, BigDecimal price) {
-        return Optional.ofNullable(strategyMap.get(memberCode)).orElse(originPrice -> printAndReturn(MemberDiscountEnum.LV1)).apply(price);
+        return Optional.ofNullable(strategyMap.get(memberCode)).orElse(originPrice -> printAndReturn(originPrice, MemberDiscountEnum.LV1)).apply(price);
     }
 
     public static void main(String[] args) {
